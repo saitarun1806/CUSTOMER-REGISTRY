@@ -35,14 +35,12 @@ server/
     │   ├── Feedback.js
     │   ├── Message.js
     │   └── Notification.js
-    ├── routes/
-    │   ├── authRoutes.js
-    │   ├── complaintRoutes.js
-    │   ├── feedbackRoutes.js
-    │   ├── messageRoutes.js
-    │   └── notificationRoutes.js
-    └── seed/
-        └── seedDemoUsers.js
+    └── routes/
+        ├── authRoutes.js
+        ├── complaintRoutes.js
+        ├── feedbackRoutes.js
+        ├── messageRoutes.js
+        └── notificationRoutes.js
 ```
 
 ### client/
