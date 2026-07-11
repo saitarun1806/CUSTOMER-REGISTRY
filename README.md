@@ -3,8 +3,8 @@
 A MERN-stack customer complaint/support system with three roles — **customer**, **agent**, and **admin** — covering complaint submission, live chat, escalation, feedback, and notifications.
 
 ```
-CLIENT COPY/   → React + Vite frontend
-SEVER COPY/    → Node + Express + MongoDB backend
+client/   → React + Vite frontend
+server/    → Node + Express + MongoDB backend
 ```
 
 ---
@@ -23,7 +23,7 @@ Use these to log in and explore the app without registering new users.
 - The **admin** account is not a normal database user — it's auto-created the first time you log in with the email/password set in the backend's `ADMIN_EMAIL` / `ADMIN_PASSWORD` environment variables. The values above match the included `.env`; change them before you deploy anywhere public, then log in once with the new values to (re)create the admin account.
 - The **agent** and **customer** accounts are created by a seed script — run it once against your database:
   ```bash
-  cd "SEVER COPY"
+  cd "server"
   npm install
   npm run seed
   ```
@@ -32,11 +32,11 @@ Use these to log in and explore the app without registering new users.
 
 ---
 
-## 1. Backend Deployment (`SEVER COPY`)
+## 1. Backend Deployment (`server`)
 
 The backend is a standard Express + Mongoose API. Deploy it to any Node host (Render, Railway, Fly.io, an EC2/VPS box, etc.).
 
-1. Push `SEVER COPY` to its own repo (or a subdirectory your host can target).
+1. Push `server` to its own repo (or a subdirectory your host can target).
 2. Set these environment variables on your host:
 
    | Variable         | Example                                              |
@@ -55,11 +55,11 @@ The backend is a standard Express + Mongoose API. Deploy it to any Node host (Re
 
 ---
 
-## 2. Frontend Deployment (`CLIENT COPY`)
+## 2. Frontend Deployment (`client`)
 
 The frontend is a Vite React app. Deploy it to Vercel, Netlify, Cloudflare Pages, etc.
 
-1. Push `CLIENT COPY` to its own repo (or point your host at that subdirectory).
+1. Push `client` to its own repo (or point your host at that subdirectory).
 2. Set a build environment variable:
 
    | Variable       | Value                                  |
@@ -77,12 +77,12 @@ The frontend is a Vite React app. Deploy it to Vercel, Netlify, Cloudflare Pages
 
 ```bash
 # Backend
-cd "SEVER COPY"
+cd "server"
 npm install
 npm run dev        # starts on the PORT in .env (default 8081)
 
 # Frontend (in a second terminal)
-cd "CLIENT COPY"
+cd "client"
 npm install
 npm run dev         # starts on http://localhost:5173, calls http://localhost:8081 by default
 ```
