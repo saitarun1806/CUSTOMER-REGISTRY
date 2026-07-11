@@ -4,6 +4,16 @@ A MERN-stack customer complaint/support system with three roles — **customer**
 
 **Live app:** https://customer-registry-indol.vercel.app
 
+## Demo Accounts
+
+| Role     | Email                  | Password       |
+|----------|--------------------------|-----------------|
+| Admin    | `admin8689@gmail.com`  | `admin8689`     |
+| Agent    | `agent@demo.com`       | `Agent@123`     |
+| Customer | `customer@demo.com`    | `Customer@123`  |
+
+---
+
 ---
 
 ## Project Structure
@@ -54,12 +64,10 @@ client/
     │   └── axios.jsx
     ├── components/
     │   ├── ComplaintCard.jsx
-    │   ├── Illustrations.jsx
     │   ├── Navbar.jsx
     │   └── ProtectedRoute.jsx
     ├── context/
     │   ├── AuthContext.jsx
-    │   └── ThemeContext.jsx
     ├── pages/
     │   ├── Home.jsx
     │   ├── Login.jsx
@@ -76,15 +84,6 @@ client/
 
 ---
 
-## Demo Accounts
-
-| Role     | Email                  | Password       |
-|----------|--------------------------|-----------------|
-| Admin    | `admin8689@gmail.com`  | `admin8689`     |
-| Agent    | `agent@demo.com`       | `Agent@123`     |
-| Customer | `customer@demo.com`    | `Customer@123`  |
-
----
 
 ## Environment Variables
 
