@@ -1,30 +1,35 @@
-import moongoose from "mongoose";
+import mongoose from "mongoose";
 
 const FeedbackSchema = new mongoose.Schema(
     {
-        complaintId:{
+        complaintId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Complaint",
             required: true,
             unique: true,
         },
-        customer:{
+        customer: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
-        rating:{
+        agent: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+        rating: {
             type: Number,
             required: true,
             min: 1,
             max: 5,
         },
-        comments:{
+        comments: {
             type: String,
             trim: true,
             default: "",
-        }     
-    },{
+        }
+    }, {
         timestamps: true,
     }
 );

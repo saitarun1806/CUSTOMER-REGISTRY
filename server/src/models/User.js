@@ -1,4 +1,4 @@
-import moongoose from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
     {
@@ -29,8 +29,8 @@ const userSchema = new mongoose.Schema(
         },
         role:{
             type:String,
-            enum: ['Customer', 'Agent', 'Admin'],
-            default: 'Customer',
+            enum: ['customer', 'agent', 'admin'],
+            default: 'customer',
         },
     },
     {
