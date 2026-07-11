@@ -10,15 +10,9 @@ const auth = async (req, res, next) => {
                 return res.status(401).json({ message: "Not authorized, no token" });
             }
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            if (decoded.id === "admin") {
-                req.user = {
-                    _id: "admin",
-                    fullName: "Admin",
-                    email: process.env.ADMIN_EMAIL,
-                    role: "admin"
-                };
-            } else {
-                req.user = await User.findById(decoded.id).select("-password");
+            req.user = await User.findById(decoded.id).select("-password");
+            if (!req.user) {
+                return res.status(401).json({ message: "Not authorized, user not found" });
             }
             next();
         } catch (err) {

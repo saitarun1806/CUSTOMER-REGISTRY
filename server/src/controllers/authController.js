@@ -34,6 +34,7 @@ const registerUser = async (req, res) => {
             email: user.email,
             phone: user.phone,
             address: user.address,
+            role: user.role,
             token
         });
     } catch (err) {
@@ -47,15 +48,29 @@ const loginUser = async (req, res) => {
         const { email, password } = req.body;
 
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            token = jwt.sign({ id: "admin" }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+
+            let adminUser = await User.findOne({ email: process.env.ADMIN_EMAIL, role: "admin" });
+
+            if (!adminUser) {
+                
+                const hashedAdminPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+                adminUser = await User.create({
+                    fullName: "Admin",
+                    email: process.env.ADMIN_EMAIL,
+                    password: hashedAdminPassword,
+                    role: "admin",
+                });
+            }
+
+            token = jwt.sign({ id: adminUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
             return res.status(200).json({
-                _id: "admin",
-                fullName: "Admin",
-                email: process.env.ADMIN_EMAIL,
+                _id: adminUser._id,
+                fullName: adminUser.fullName,
+                email: adminUser.email,
                 phone: "",
                 address: "",
                 role: "admin",
-                token
+                token,
             });
         }
         if (!email || !password) {
@@ -70,6 +85,7 @@ const loginUser = async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 address: user.address,
+                role: user.role,
                 token
             });
         } else {

@@ -1,7 +1,11 @@
 import Notification from '../models/Notification.js';
+import mongoose from 'mongoose';
 
 const getNotifications = async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.user._id)) {
+            return res.status(200).json([]);
+        }
         const notifications = await Notification.find({ recipient: req.user._id })
         .populate('relatedComplaint', 'title status')
         .sort({createdAt:-1});

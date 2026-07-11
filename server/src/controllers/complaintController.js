@@ -1,5 +1,6 @@
 import Complaint from '../models/Complaint.js';
 import Notification from '../models/Notification.js'; // Fixed typo: Notifcation -> Notification
+import User from '../models/User.js';
 
 const createComplaint = async (req, res) => {
     try {
@@ -105,6 +106,33 @@ const updateComplaintStatus = async (req, res) => {
     }
 };
 
+const escalateComplaint = async (req, res) => {
+    try {
+        const { reason } = req.body;
+        const complaint = await Complaint.findById(req.params.id);
+
+        if (!complaint) {
+            return res.status(404).json({ message: "Complaint not found" });
+        }
+
+        complaint.isEscalated = true;
+        complaint.escalationReason = reason || '';
+        await complaint.save();
+
+        const admins = await User.find({ role: 'admin' }).select('_id');
+        await Promise.all(admins.map((admin) => Notification.create({
+            recipient: admin._id,
+            type: 'Escalation',
+            message: `Complaint "${complaint.title}" was escalated${reason ? `: ${reason}` : ''}`,
+            relatedComplaint: complaint._id,
+        })));
+
+        res.status(200).json({ message: "Complaint escalated", complaint });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to escalate complaint", error: err.message });
+    }
+};
+
 const getComplaintsByStatus = async (req, res) => {
     try {
         const { status } = req.params;
@@ -125,4 +153,4 @@ const getComplaintsByStatus = async (req, res) => {
 };
 
 // Note: Ensure your route file imports 'assignAgent' (not assignComplaint) to match this export!
-export { createComplaint, getComplaints, assignAgent, updateComplaintStatus, getComplaintsByStatus };
+export { createComplaint, getComplaints, assignAgent, updateComplaintStatus, escalateComplaint, getComplaintsByStatus };
