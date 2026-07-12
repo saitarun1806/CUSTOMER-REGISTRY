@@ -149,4 +149,33 @@ const getAgent = async (req, res) => {
         res.status(500).json({ message: "Error fetching agents", err });
     }
 };
-export { registerUser, loginUser, createAgent, getAgent };
+
+const updateProfile = async (req, res) => {
+    try {
+        const { fullName, phone, address } = req.body;
+
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (fullName !== undefined) user.fullName = fullName;
+        if (phone !== undefined) user.phone = phone;
+        if (address !== undefined) user.address = address;
+
+        await user.save();
+
+        res.status(200).json({
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            role: user.role,
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Error updating profile", err });
+    }
+};
+
+export { registerUser, loginUser, createAgent, getAgent, updateProfile };

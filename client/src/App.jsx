@@ -12,6 +12,7 @@ import Notifications from "./pages/Notifications";
 import Agents from "./pages/Agents";
 import AgentProfile from "./pages/AgentProfile";
 import FeedbackAnalytics from "./pages/FeedbackAnalytics";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/complaints/:id" element={<ProtectedRoute><ComplaintDetail /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/agents" element={<ProtectedRoute allowedRoles={["admin"]}><Agents /></ProtectedRoute>} />
         <Route path="/agents/:id" element={<ProtectedRoute allowedRoles={["admin"]}><AgentProfile /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute allowedRoles={["admin"]}><FeedbackAnalytics /></ProtectedRoute>} />

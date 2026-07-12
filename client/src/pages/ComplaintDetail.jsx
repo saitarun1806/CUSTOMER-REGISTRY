@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
-import { Send, Star, Flame } from "lucide-react";
+import { useParams, Link } from "react-router-dom";
+import { Send, Star, Flame, History } from "lucide-react";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
@@ -16,13 +16,16 @@ export default function ComplaintDetail() {
   const [loading, setLoading] = useState(true);
   const [escalationReason, setEscalationReason] = useState("");
   const [escalating, setEscalating] = useState(false);
+  const [customerHistory, setCustomerHistory] = useState([]);
 
   const messagesEndRef = useRef(null);
 
   const loadComplaint = async () => {
+    // No GET /api/complaints/:id on the backend yet, so we pull the list and filter.
     const res = await api.get("/api/complaints");
     const found = res.data.find((c) => c._id === id);
     setComplaint(found || null);
+    return found || null;
   };
 
   const loadMessages = async () => {
@@ -35,26 +38,44 @@ export default function ComplaintDetail() {
       const res = await api.get(`/api/feedback/${id}`);
       setFeedback(res.data);
     } catch {
-      setFeedback(null);
+      setFeedback(null); // no feedback submitted yet
     }
   };
 
+  const loadCustomerHistory = async (customerId) => {
+    if (!customerId) return;
+    try {
+      const res = await api.get(`/api/complaints/customer/${customerId}`);
+      setCustomerHistory(res.data.complaints || []);
+    } catch {
+      setCustomerHistory([]);
+    }
+  };
+
+  // Initial load when the page mounts or the complaint id changes
   useEffect(() => {
     (async () => {
       setLoading(true);
-      await Promise.all([loadComplaint(), loadMessages(), loadFeedback()]);
+      const [loadedComplaint] = await Promise.all([loadComplaint(), loadMessages(), loadFeedback()]);
+      if ((user.role === "agent" || user.role === "admin") && loadedComplaint?.customer?._id) {
+        loadCustomerHistory(loadedComplaint.customer._id);
+      }
       setLoading(false);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // Poll for updates every 4 seconds: new messages AND complaint status/assignment changes
   useEffect(() => {
     const intervalId = setInterval(() => {
       loadMessages();
       loadComplaint();
     }, 4000);
     return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // Scrolls the messages list to the bottom whenever the messages array changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -123,6 +144,7 @@ export default function ComplaintDetail() {
           <p className="subtext">Escalation reason: {complaint.escalationReason}</p>
         )}
 
+        {/* Agent or admin: change status */}
         {(user.role === "agent" || user.role === "admin") && (
           <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
             {["Open", "In Progress", "Resolved", "Closed"].map((s) => (
@@ -138,6 +160,7 @@ export default function ComplaintDetail() {
           </div>
         )}
 
+        {/* Agent or admin: escalate this complaint */}
         {(user.role === "agent" || user.role === "admin") && !complaint.isEscalated && complaint.status !== "Closed" && (
           <form onSubmit={handleEscalate} style={{ display: "flex", gap: 8, marginTop: 12 }}>
             <input
@@ -153,6 +176,42 @@ export default function ComplaintDetail() {
         )}
       </div>
 
+      {/* Agent or admin: customer's full complaint history, so context isn't lost across cases */}
+      {(user.role === "agent" || user.role === "admin") && (
+        <div className="card" style={{ marginBottom: 20 }}>
+          <h3 style={{ marginBottom: 12 }}>
+            <History size={16} style={{ verticalAlign: "middle" }} /> Customer History
+          </h3>
+          {customerHistory.filter((c) => c._id !== id).length === 0 ? (
+            <p className="text-muted">No other complaints from this customer.</p>
+          ) : (
+            customerHistory
+              .filter((c) => c._id !== id)
+              .map((c) => (
+                <Link
+                  key={c._id}
+                  to={`/complaints/${c._id}`}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "10px 0",
+                    borderBottom: "1px solid var(--border)",
+                    color: "var(--text)",
+                    textDecoration: "none",
+                  }}
+                >
+                  <span>{c.title}</span>
+                  <span className="text-muted">
+                    {c.status} · {new Date(c.createdAt).toLocaleDateString()}
+                  </span>
+                </Link>
+              ))
+          )}
+        </div>
+      )}
+
+      {/* Messages */}
       <div className="card" style={{ marginBottom: 20 }}>
         <h3 style={{ marginBottom: 12 }}>Messages</h3>
         <div className="messages-list">
@@ -182,6 +241,7 @@ export default function ComplaintDetail() {
         )}
       </div>
 
+      {/* Feedback - customers submit it once resolved/closed; agents/admins get a read-only view */}
       {user.role === "customer" && !canResolve && (
         <div className="card">
           <h3 style={{ marginBottom: 12 }}>

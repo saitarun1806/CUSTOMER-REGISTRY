@@ -1,5 +1,5 @@
 import Complaint from '../models/Complaint.js';
-import Notification from '../models/Notification.js'; 
+import Notification from '../models/Notification.js';
 import User from '../models/User.js';
 
 const createComplaint = async (req, res) => {
@@ -22,7 +22,7 @@ const getComplaints = async (req, res) => {
     try {
         if (req.user.role === 'admin') {
             const complaints = await Complaint.find()
-                .populate('customer', 'fullName email') 
+                .populate('customer', 'fullName email')
                 .populate('assignedAgent', 'fullName email')
                 .sort({ createdAt: -1 });
             res.status(200).json(complaints);
@@ -53,21 +53,17 @@ const assignAgent = async (req, res) => {
         if (!complaint) {
             return res.status(404).json({ message: "Complaint not found" });
         }
-        
-      
+
         complaint.assignedAgent = agentId;
         complaint.status = 'In Progress';
         await complaint.save();
-
-        
         await Notification.create({
             recipient: agentId,
-            type: 'Assignment', 
+            type: 'Assignment',
             message: `You have been assigned a new complaint: ${complaint.title}`,
             relatedComplaint: complaint._id,
         });
 
-        
         await Notification.create({
             recipient: complaint.customer,
             type: 'Status Update',
@@ -89,7 +85,7 @@ const updateComplaintStatus = async (req, res) => {
         if (!complaint) {
             return res.status(404).json({ message: "Complaint not found" });
         }
-        
+
         complaint.status = status;
         await complaint.save();
         
@@ -152,5 +148,23 @@ const getComplaintsByStatus = async (req, res) => {
     }
 };
 
+const getCustomerHistory = async (req, res) => {
+    try {
+        const { customerId } = req.params;
 
-export { createComplaint, getComplaints, assignAgent, updateComplaintStatus, escalateComplaint, getComplaintsByStatus };
+        const complaints = await Complaint.find({ customer: customerId })
+            .populate('customer', 'fullName email')
+            .populate('assignedAgent', 'fullName email')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            count: complaints.length,
+            complaints,
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to fetch customer history", error: err.message });
+    }
+};
+
+
+export { createComplaint, getComplaints, assignAgent, updateComplaintStatus, escalateComplaint, getComplaintsByStatus, getCustomerHistory };

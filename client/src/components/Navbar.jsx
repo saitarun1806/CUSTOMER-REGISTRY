@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LifeBuoy, LayoutDashboard, Bell, Users, LogOut, BarChart3 } from "lucide-react";
+import { LifeBuoy, LayoutDashboard, Bell, Users, LogOut, BarChart3, UserCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 
@@ -65,9 +65,9 @@ export default function Navbar() {
           </Link>
         )}
 
-        <span className="user-chip">
-          {user.fullName} · {user.role}
-        </span>
+        <Link to="/profile" className="user-chip" style={{ textDecoration: "none" }}>
+          <UserCircle size={16} /> {user.fullName} · {user.role}
+        </Link>
 
         <button className="btn btn-outline" onClick={handleLogout}>
           <LogOut size={14} /> Logout
