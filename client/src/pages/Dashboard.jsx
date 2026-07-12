@@ -3,7 +3,7 @@ import { PlusCircle } from "lucide-react";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import ComplaintCard from "../components/ComplaintCard";
-import { EmptyStateIllustration } from "../components/Illustrations";
+import heroImage from "../assets/hero.png";
 
 const COMPLAINT_TYPES = ["Complaint", "Inquiry", "Billing", "Technical", "General", "Other"];
 
@@ -165,7 +165,7 @@ export default function Dashboard() {
         <p>Loading...</p>
       ) : complaints.length === 0 ? (
         <div className="empty-state">
-          <EmptyStateIllustration />
+          <img src={heroImage} alt="Nothing here yet" className="illustration-img illustration-img-sm" />
           <p>No complaints to show yet.</p>
         </div>
       ) : (

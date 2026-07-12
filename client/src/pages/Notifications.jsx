@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BellRing } from "lucide-react";
 import api from "../api/axios";
-import { EmptyStateIllustration } from "../components/Illustrations";
+import heroImage from "../assets/hero.png";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -49,7 +49,7 @@ export default function Notifications() {
           <p>Loading...</p>
         ) : notifications.length === 0 ? (
           <div className="empty-state">
-            <EmptyStateIllustration />
+            <img src={heroImage} alt="Nothing here yet" className="illustration-img illustration-img-sm" />
             <p>You're all caught up!</p>
           </div>
         ) : (

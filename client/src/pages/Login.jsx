@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LifeBuoy } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { SupportIllustration } from "../components/Illustrations";
+import heroImage from "../assets/hero.png";
 
 export default function Login() {
   const { login } = useAuth();
@@ -32,7 +32,7 @@ export default function Login() {
     <div className="auth-wrapper">
       <div className="auth-illustration">
         <div style={{ maxWidth: 340 }}>
-          <SupportIllustration />
+          <img src={heroImage} alt="Support agent helping a customer" className="illustration-img" />
         </div>
       </div>
       <div className="auth-form-side">
