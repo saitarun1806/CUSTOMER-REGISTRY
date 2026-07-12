@@ -1,5 +1,5 @@
 import Complaint from '../models/Complaint.js';
-import Notification from '../models/Notification.js'; // Fixed typo: Notifcation -> Notification
+import Notification from '../models/Notification.js'; 
 import User from '../models/User.js';
 
 const createComplaint = async (req, res) => {
@@ -22,7 +22,7 @@ const getComplaints = async (req, res) => {
     try {
         if (req.user.role === 'admin') {
             const complaints = await Complaint.find()
-                .populate('customer', 'fullName email') // Fixed typo: eamil -> email
+                .populate('customer', 'fullName email') 
                 .populate('assignedAgent', 'fullName email')
                 .sort({ createdAt: -1 });
             res.status(200).json(complaints);
@@ -54,20 +54,20 @@ const assignAgent = async (req, res) => {
             return res.status(404).json({ message: "Complaint not found" });
         }
         
-        // Fixed bug: assignAgent -> assignedAgent (Must match your database schema exactly!)
+      
         complaint.assignedAgent = agentId;
         complaint.status = 'In Progress';
         await complaint.save();
 
-        // 1. Notify the Agent (Added required 'type' field!)
+        
         await Notification.create({
             recipient: agentId,
-            type: 'Assignment', // <--- This prevents the validation crash!
+            type: 'Assignment', 
             message: `You have been assigned a new complaint: ${complaint.title}`,
             relatedComplaint: complaint._id,
         });
 
-        // 2. Notify the Customer (So they know someone is working on their ticket!)
+        
         await Notification.create({
             recipient: complaint.customer,
             type: 'Status Update',
@@ -152,5 +152,5 @@ const getComplaintsByStatus = async (req, res) => {
     }
 };
 
-// Note: Ensure your route file imports 'assignAgent' (not assignComplaint) to match this export!
+
 export { createComplaint, getComplaints, assignAgent, updateComplaintStatus, escalateComplaint, getComplaintsByStatus };

@@ -42,19 +42,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchAgents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     setLoading(true);
     fetchComplaints();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
 
   useEffect(() => {
     const intervalId = setInterval(fetchComplaints, 6000);
     return () => clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
 
   const handleCreate = async (e) => {

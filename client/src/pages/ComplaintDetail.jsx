@@ -20,7 +20,6 @@ export default function ComplaintDetail() {
   const messagesEndRef = useRef(null);
 
   const loadComplaint = async () => {
-    // No GET /api/complaints/:id on the backend yet, so we pull the list and filter.
     const res = await api.get("/api/complaints");
     const found = res.data.find((c) => c._id === id);
     setComplaint(found || null);
@@ -36,31 +35,26 @@ export default function ComplaintDetail() {
       const res = await api.get(`/api/feedback/${id}`);
       setFeedback(res.data);
     } catch {
-      setFeedback(null); // no feedback submitted yet
+      setFeedback(null);
     }
   };
 
-  // Initial load when the page mounts or the complaint id changes
   useEffect(() => {
     (async () => {
       setLoading(true);
       await Promise.all([loadComplaint(), loadMessages(), loadFeedback()]);
       setLoading(false);
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // Poll for updates every 4 seconds: new messages AND complaint status/assignment changes
   useEffect(() => {
     const intervalId = setInterval(() => {
       loadMessages();
       loadComplaint();
     }, 4000);
     return () => clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // Scrolls the messages list to the bottom whenever the messages array changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -129,7 +123,6 @@ export default function ComplaintDetail() {
           <p className="subtext">Escalation reason: {complaint.escalationReason}</p>
         )}
 
-        {/* Agent or admin: change status */}
         {(user.role === "agent" || user.role === "admin") && (
           <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
             {["Open", "In Progress", "Resolved", "Closed"].map((s) => (
@@ -145,7 +138,6 @@ export default function ComplaintDetail() {
           </div>
         )}
 
-        {/* Agent or admin: escalate this complaint */}
         {(user.role === "agent" || user.role === "admin") && !complaint.isEscalated && complaint.status !== "Closed" && (
           <form onSubmit={handleEscalate} style={{ display: "flex", gap: 8, marginTop: 12 }}>
             <input
@@ -161,7 +153,6 @@ export default function ComplaintDetail() {
         )}
       </div>
 
-      {/* Messages */}
       <div className="card" style={{ marginBottom: 20 }}>
         <h3 style={{ marginBottom: 12 }}>Messages</h3>
         <div className="messages-list">
@@ -191,7 +182,6 @@ export default function ComplaintDetail() {
         )}
       </div>
 
-      {/* Feedback - customers submit it once resolved/closed; agents/admins get a read-only view */}
       {user.role === "customer" && !canResolve && (
         <div className="card">
           <h3 style={{ marginBottom: 12 }}>
